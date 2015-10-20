@@ -5,7 +5,7 @@ PROGRAMMER = arduino
 SERIAL = /dev/ttyACM0
 BAUD = 115200
 
-SOURCES = main.c
+SOURCES = NEC.c UART.c main.c
 OBJECTS = $(SOURCES:.c=.o)
 PROJECTNAME = led
 
@@ -24,8 +24,12 @@ all: $(PROJECTNAME).hex
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
 
 program: $(PROJECTNAME).hex
 	$(DOWNLOADER) -F -V -e -c $(PROGRAMMER) -p $(MMCU) -P $(SERIAL) -b $(BAUD) -U flash:w:$(PROJECTNAME).hex
+
+
+clean:
+	rm -rf *.hex
