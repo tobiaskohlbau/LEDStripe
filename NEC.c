@@ -11,6 +11,7 @@ volatile uint8_t command = 0;
 volatile uint8_t timer0_overflow_cnt = 0;
 volatile state_t cur_state = BURST;
 volatile return_t rc;
+volatile nec_t nec;
 
 return_t (* state[])(void) = {ir_burst, ir_gap, ir_address, ir_address_inverted, ir_command, ir_command_inverted, ir_repeat};
 
@@ -173,19 +174,18 @@ return_t ir_command(void)
 return_t ir_command_inverted(void)
 {
     return_t returnCode = ir_decode(COMMAND_INVERTED);
-    if (returnCode == SUCCESS)
+    if ((returnCode == SUCCESS) && !(nec.status & (1 << NEC_READY)))
     {
-        sendCharUART(address);
-        sendCharUART('\n');
-        sendCharUART(command);
-        sendCharUART('\n');
+        nec.address = address;
+        nec.command = command;
+        nec.status |= (1 << NEC_READY);
     }
     return returnCode;
 }
 
 return_t ir_repeat(void)
 {
-    sendStringUART("repeat\n");
+    nec.status |= (1 << NEC_REPEAT);
     // reset counter for waiting 114.24ms
     timer0_overflow_cnt = 7;
     return SUCCESS;
@@ -200,13 +200,13 @@ ISR(INT0_vect)
 ISR(TIMER0_OVF_vect)
 {
     // overflows every 16.32ms
-    // each tick is 64us lon
+    // each tick is 64us long
     if (timer0_overflow_cnt > 0)
     {
         timer0_overflow_cnt--;
     }
     if (timer0_overflow_cnt == 0)
     {
-        PORTB &= ~(1 << PB5);
+        nec.status &= ~(1 << NEC_REPEAT);
     }
 }

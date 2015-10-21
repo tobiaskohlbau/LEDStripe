@@ -5,7 +5,7 @@ PROGRAMMER = arduino
 SERIAL = /dev/ttyACM0
 BAUD = 115200
 
-SOURCES = NEC.c UART.c main.c
+SOURCES = NEC.c UART.c PWM.c main.c
 OBJECTS = $(SOURCES:.c=.o)
 PROJECTNAME = led
 
