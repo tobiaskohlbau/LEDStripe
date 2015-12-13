@@ -30,6 +30,5 @@ all: $(PROJECTNAME).hex
 program: $(PROJECTNAME).hex
 	$(DOWNLOADER) -F -V -e -c $(PROGRAMMER) -p $(MMCU) -P $(SERIAL) -b $(BAUD) -U flash:w:$(PROJECTNAME).hex
 
-
 clean:
 	rm -rf *.hex
