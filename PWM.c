@@ -3,7 +3,7 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-volatile uint8_t pwm_channels[8] = {0, 0, 0, 0, 0, 255, 0, 0};
+volatile uint8_t pwm_channels[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 void initPWM(void)
 {
@@ -11,6 +11,8 @@ void initPWM(void)
     DDRB = 0xFF; 
 
     TCCR1B = 1;
+
+    startPWM();
 }
 
 void startPWM(void)

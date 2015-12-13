@@ -1,5 +1,6 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <stdlib.h>
 
 #include "NEC.h"
 #include "UART.h"
@@ -40,20 +41,25 @@ int main (void)
     initPWM();
 
     sei();
-    static uint8_t tmp_command;
     while(1) {
-        if (nec.status & (1 << NEC_READY))
-        {
-            tmp_command = nec.command;
-            commands(tmp_command);
-            nec.status &= ~(1 << NEC_READY);
-        }
+        //if (nec.status & (1 << NEC_READY))
+        //{
+        //    tmp_command = nec.command;
+        //    commands(tmp_command);
+        //    nec.status &= ~(1 << NEC_READY);
+        //}
 
-        if (nec.status & (1 << NEC_REPEAT))
-        {
-            commands(tmp_command);
+        //if (nec.status & (1 << NEC_REPEAT))
+        //{
+        //    commands(tmp_command);
 
-            nec.status &= ~(1 << NEC_REPEAT);
+        //    nec.status &= ~(1 << NEC_REPEAT);
+        //}
+
+        if (uart.ready)
+        {
+           setChannelPWM(uart.buffer[0], uart.buffer[1]);
+           uart.ready = 0;
         }
     }
 }
